@@ -1,4 +1,4 @@
-package harbor
+package core
 
 import (
 	"github.com/fatih/color"

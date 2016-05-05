@@ -11,11 +11,11 @@ LDFLAGS=-ldflags "-X github.com/fabiogibson/harbor/core.Version=${VERSION} -X gi
 .DEFAULT_GOAL: $(BINARY)
 
 $(BINARY): $(SOURCES)
-	@go build -o ./bin/${BINARY} ./cli/main.go
+	@go build -o ./bin/${BINARY} main.go
 
 .PHONY: install
 install:
-	@go install ${LDFLAGS} ./...
+	@go install ${LDFLAGS}
 
 .PHONY: clean
 clean:
