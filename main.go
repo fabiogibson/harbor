@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/fsnotify/fsnotify"
-	"harbor/runner"
-	"harbor/watcher"
+	"github.com/fabiogibson/harbor/runner"
+	"github.com/fabiogibson/harbor/watcher"
 )
 
 func main() {
