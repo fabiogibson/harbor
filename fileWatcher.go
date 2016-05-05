@@ -1,4 +1,4 @@
-package watcher
+package harbor
 
 import (
 	"github.com/fsnotify/fsnotify"
@@ -18,14 +18,14 @@ type FsWatcher struct {
 }
 
 //
-//
+// Subscribe subscribes an event listener to file watcher.
 //
 func (f *FsWatcher) Subscribe(eventOp fsnotify.Op, handler func(ev fsnotify.Event)) {
 	f.Subscribers[eventOp] = append(f.Subscribers[eventOp], handler)
 }
 
 //
-//
+// notifySubscribers notifies all subscribed listeners when an event occurs.
 //
 func (f *FsWatcher) notifySubscribers(eventOp fsnotify.Op, event fsnotify.Event) {
 	if val, ok := f.Subscribers[eventOp]; ok {

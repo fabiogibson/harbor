@@ -1,4 +1,4 @@
-package runner
+package harbor
 
 import (
 	"github.com/fatih/color"
@@ -11,14 +11,12 @@ import (
 //
 //
 func RunTests(filename string) error {
-	if !strings.HasSuffix(filename, "_test.go") {
+	if !strings.HasSuffix(filename, ".go") {
 		return nil
 	}
 
 	color.Blue("===> Running tests for %s", filename)
 
-	// exec.Command("go", "test", strings.Replace(filename, "_test", "", -1), filename)
-	// testOutput, err := exec.Command("go", "test", strings.Replace(filename, "_test", "", -1), filename).CombinedOutput()
 	pkg := filepath.Dir(filename)
 	testOutput, err := exec.Command("go", "test", "./"+pkg).CombinedOutput()
 

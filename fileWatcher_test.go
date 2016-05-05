@@ -1,4 +1,4 @@
-package watcher
+package harbor
 
 import (
 	"github.com/fsnotify/fsnotify"

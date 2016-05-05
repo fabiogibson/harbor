@@ -2,17 +2,16 @@ package main
 
 import (
 	"fmt"
+	"github.com/fabiogibson/harbor"
 	"github.com/fsnotify/fsnotify"
-	"github.com/fabiogibson/harbor/runner"
-	"github.com/fabiogibson/harbor/watcher"
 )
 
 func main() {
 	fmt.Println("Initializing watcher...")
-	fsWatcher := watcher.NewFsWatcher()
+	fsWatcher := harbor.NewFsWatcher()
 
 	testRunner := func(ev fsnotify.Event) {
-		go runner.RunTests(ev.Name)
+		go harbor.RunTests(ev.Name)
 	}
 
 	fsWatcher.Subscribe(16, testRunner)
