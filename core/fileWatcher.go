@@ -1,10 +1,10 @@
 package core
 
 import (
+	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 	"time"
 )
@@ -13,41 +13,40 @@ import (
 // FsWatcher watches for filesystem changes and notify it's subscribers
 //
 type FsWatcher struct {
-	Subscribers map[fsnotify.Op][]func(ev fsnotify.Event)
+	Subscribers map[int][]Runner
 	watcher     *fsnotify.Watcher
 }
 
 //
 // Subscribe subscribes an event listener to file watcher.
 //
-func (f *FsWatcher) Subscribe(eventOp fsnotify.Op, handler func(ev fsnotify.Event)) {
-	f.Subscribers[eventOp] = append(f.Subscribers[eventOp], handler)
+func (f *FsWatcher) Subscribe(runner Runner) {
+	for _, ev := range runner.HandledEvents() {
+		f.Subscribers[ev] = append(f.Subscribers[ev], runner)
+	}
 }
 
 //
 // notifySubscribers notifies all subscribed listeners when an event occurs.
 //
 func (f *FsWatcher) notifySubscribers(eventOp fsnotify.Op, event fsnotify.Event) {
-	if val, ok := f.Subscribers[eventOp]; ok {
-		for _, handler := range val {
-			handler(event)
+	if runners, exist := f.Subscribers[int(eventOp)]; exist {
+		for _, runner := range runners {
+			fmt.Println("Calling run")
+			runner.Run(event.Name)
 		}
 	}
 }
 
 //
-// loadDirectories adds all sub directories in rootPath to fsNotify Watcher.
 //
-func (f *FsWatcher) loadDirectories(rootPath string) {
-	visit := func(p string, fi os.FileInfo, err error) error {
-		if fi.IsDir() {
-			err = f.watcher.Add(path.Join(rootPath, p))
-		}
-
-		return nil
+//
+func (f *FsWatcher) visitFileInfo(p string, fi os.FileInfo, err error) error {
+	if fi.IsDir() {
+		return f.watcher.Add(p)
 	}
 
-	filepath.Walk(rootPath, visit)
+	return nil
 }
 
 //
@@ -81,7 +80,7 @@ func (f *FsWatcher) Init(path string) {
 		}
 	}()
 
-	f.loadDirectories(path)
+	filepath.Walk(path, f.visitFileInfo)
 
 	if err != nil {
 		log.Fatal(err)
@@ -95,6 +94,6 @@ func (f *FsWatcher) Init(path string) {
 //
 func NewFsWatcher() *FsWatcher {
 	return &FsWatcher{
-		Subscribers: make(map[fsnotify.Op][]func(ev fsnotify.Event)),
+		Subscribers: make(map[int][]Runner),
 	}
 }
